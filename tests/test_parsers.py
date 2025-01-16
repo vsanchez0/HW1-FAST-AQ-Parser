@@ -5,6 +5,7 @@ from seqparser import (
         FastqParser)
 
 import pytest
+import os
 
 
 def test_freebie_parser_1():
@@ -33,7 +34,23 @@ def test_FastaParser():
     files that are blank or corrupted in some way. Two example Fasta files are
     provided in /tests/bad.fa and /tests/empty.fa
     """
-    pass
+    good = os.path.join('data','test.fa')
+    blank = os.path.join('tests','blank.fa')
+    bad = os.path.join('tests','bad.fa')
+
+    parser = FastaParser(good)
+    sequences = list(parser)
+    assert len(sequences) > 0, "Expected at least one sequence in test.fa"
+    assert isinstance(sequences[0], tuple) and len(sequences[0]) == 2, \
+        "Each sequence should be a tuple with (header, sequence)"
+    
+    parser = FastaParser(blank)
+    sequences = list(parser)
+    assert len(sequences) == 0, "Expected no sequences in blank.fa"
+
+    with pytest.raises(ValueError, match="Malformed FASTA file"):
+        parser = FastaParser(bad)
+        list(parser)
 
 
 def test_FastaFormat():
@@ -41,7 +58,16 @@ def test_FastaFormat():
     Test to make sure that a fasta file is being read in if a fastq file is
     read, the first item is None
     """
-    pass
+    good = os.path.join("data", "test.fa")
+    fastq = os.path.join("data", "test.fq")
+
+    parser = FastaParser(good)
+    sequences = list(parser)
+    assert len(sequences) > 0, "Expected valid sequences from a well-formed FASTA file"
+
+    parser = FastaParser(fastq)
+    sequences = list(parser)
+    assert sequences[0] is None, "Expected None when reading a FASTQ file with FastaParser"
 
 
 def test_FastqParser():
@@ -50,11 +76,27 @@ def test_FastqParser():
     an instance of your FastqParser class and assert that it properly reads 
     in the example Fastq File.
     """
-    pass
+    fastq = os.path.join("data", "test.fq")
+
+    parser = FastqParser(fastq)
+    reads = list(parser)
+    assert len(reads) > 0, "Expected valid reads from a well-formed FASTQ file"
 
 def test_FastqFormat():
     """
     Test to make sure fastq file is being read in. If this is a fasta file, the
     first line is None
     """
-    pass
+    fastq = os.path.join("data", "test.fq")
+    fasta = os.path.join("data", "test.fa")
+    
+    parser = FastqParser(fastq)
+    first_read = next(parser, None)
+    assert first_read is not None, "Expected valid first read from a FASTQ file"
+
+    try:
+        parser = FastqParser(fasta)
+        first_read = next(parser, None)
+        assert first_read is None, "Expected None when reading a FASTA file with FastqParser"
+    except Exception as e:
+        assert isinstance(e, ValueError), f"Expected ValueError for FASTA file, got {type(e)}"

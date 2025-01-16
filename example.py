@@ -24,6 +24,29 @@ def main():
     # For each record of FastqParser, Reverse Transcribe the sequence
     # and print it to console
 
+    fasta_parser = FastaParser("data/test.fa")
+    fastq_parser = FastqParser("data/test.fq")
+    
+    print("Transcribed sequences from FastaParser:")
+    for record in fasta_parser:
+        transcribed_seq = transcribe(record.sequence)
+        print(f">{record.id}\n{transcribed_seq}")
+    
+    print("\nTranscribed sequences from FastqParser:")
+    for record in fastq_parser:
+        transcribed_seq = transcribe(record.sequence)
+        print(f"@{record.id}\n{transcribed_seq}\n+\n{record.quality}")
+    
+    print("\nReverse transcribed sequences from FastaParser:")
+    for record in fasta_parser:
+        rev_transcribed_seq = reverse_transcribe(record.sequence)
+        print(f">{record.id}\n{rev_transcribed_seq}")
+    
+    print("\nReverse transcribed sequences from FastqParser:")
+    for record in fastq_parser:
+        rev_transcribed_seq = reverse_transcribe(record.sequence)
+        print(f"@{record.id}\n{rev_transcribed_seq}\n+\n{record.quality}")
+
 
 """
 When executing a python script from the command line there will
