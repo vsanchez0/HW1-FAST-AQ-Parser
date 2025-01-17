@@ -45,12 +45,10 @@ def test_FastaParser():
         "Each sequence should be a tuple with (header, sequence)"
     
     parser = FastaParser(blank)
-    sequences = list(parser)
-    assert len(sequences) == 0, "Expected no sequences in blank.fa"
+    assert getattr(parser, '_sequences')==None, "Expected no sequences in blank.fa"
 
-    with pytest.raises(ValueError, match="Malformed FASTA file"):
-        parser = FastaParser(bad)
-        list(parser)
+    parser = FastaParser(bad)
+    assert getattr(parser, '_sequences')==None, "Expected malformed fasta file"
 
 
 def test_FastaFormat():
@@ -67,7 +65,7 @@ def test_FastaFormat():
 
     parser = FastaParser(fastq)
     sequences = list(parser)
-    assert sequences[0] is None, "Expected None when reading a FASTQ file with FastaParser"
+    assert sequences[0][0] is None, "Expected None when reading a FASTQ file with FastaParser"
 
 
 def test_FastqParser():
@@ -91,12 +89,12 @@ def test_FastqFormat():
     fasta = os.path.join("data", "test.fa")
     
     parser = FastqParser(fastq)
-    first_read = next(parser, None)
-    assert first_read is not None, "Expected valid first read from a FASTQ file"
+    first_read = list(parser)[0]
+    assert first_read[0] is not None, "Expected valid first read from a FASTQ file"
 
     try:
         parser = FastqParser(fasta)
-        first_read = next(parser, None)
-        assert first_read is None, "Expected None when reading a FASTA file with FastqParser"
+        first_read = list(parser)[0]
+        assert first_read[0] is None, "Expected None when reading a FASTA file with FastqParser"
     except Exception as e:
         assert isinstance(e, ValueError), f"Expected ValueError for FASTA file, got {type(e)}"

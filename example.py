@@ -29,23 +29,23 @@ def main():
     
     print("Transcribed sequences from FastaParser:")
     for record in fasta_parser:
-        transcribed_seq = transcribe(record.sequence)
-        print(f">{record.id}\n{transcribed_seq}")
+        transcribed_seq = transcribe(record[1])
+        print(f">{record[0]}\n{transcribed_seq}")
     
     print("\nTranscribed sequences from FastqParser:")
     for record in fastq_parser:
-        transcribed_seq = transcribe(record.sequence)
-        print(f"@{record.id}\n{transcribed_seq}\n+\n{record.quality}")
+        transcribed_seq = transcribe(record[1])
+        print(f"@{record[0]}\n{transcribed_seq}")
     
     print("\nReverse transcribed sequences from FastaParser:")
     for record in fasta_parser:
-        rev_transcribed_seq = reverse_transcribe(record.sequence)
-        print(f">{record.id}\n{rev_transcribed_seq}")
+        rev_transcribed_seq = reverse_transcribe(record[1])
+        print(f">{record[0]}\n{rev_transcribed_seq}")
     
     print("\nReverse transcribed sequences from FastqParser:")
     for record in fastq_parser:
-        rev_transcribed_seq = reverse_transcribe(record.sequence)
-        print(f"@{record.id}\n{rev_transcribed_seq}\n+\n{record.quality}")
+        rev_transcribed_seq = reverse_transcribe(record[1])
+        print(f"@{record[0]}\n{rev_transcribed_seq}")
 
 
 """
